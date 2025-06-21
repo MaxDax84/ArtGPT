@@ -2,28 +2,33 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <title>ArteBot</title>
+  <title>ArtGPT</title>
   <style>
     body {
       margin: 0;
       padding: 0;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      background-image: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1350&q=80');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      background-repeat: no-repeat;
       min-height: 100vh;
       color: #202124;
     }
 
+    .overlay {
+      background: rgba(255, 255, 255, 0.85);
+      min-height: 100vh;
+    }
+
     .header {
-      background: #fff;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
       padding: 20px 0;
-      position: sticky;
-      top: 0;
-      z-index: 100;
+      text-align: center;
+      background: transparent;
     }
 
     .header h1 {
-      text-align: center;
       margin: 0;
       font-size: 32px;
       font-weight: 300;
@@ -52,11 +57,6 @@
       transition: all 0.3s ease;
     }
 
-    .blocco-risposta:hover {
-      box-shadow: 0 4px 8px rgba(0,0,0,0.12), 0 2px 4px rgba(0,0,0,0.08);
-      transform: translateY(-2px);
-    }
-
     .blocco-risposta.utente {
       background: #1a73e8;
       color: white;
@@ -69,8 +69,6 @@
       position: absolute;
       top: 15px;
       left: -10px;
-      width: 0;
-      height: 0;
       border-top: 10px solid transparent;
       border-bottom: 10px solid transparent;
       border-right: 10px solid #1a73e8;
@@ -89,44 +87,9 @@
       position: absolute;
       top: 15px;
       right: -10px;
-      width: 0;
-      height: 0;
       border-top: 10px solid transparent;
       border-bottom: 10px solid transparent;
       border-left: 10px solid #fff;
-    }
-
-    .blocco-risposta h3 {
-      margin: 0 0 16px 0;
-      font-size: 16px;
-      font-weight: 500;
-      opacity: 0.9;
-    }
-
-    .blocco-risposta.utente h3 {
-      color: rgba(255,255,255,0.9);
-    }
-
-    .blocco-risposta.bot h3 {
-      color: #34a853;
-    }
-
-    .blocco-risposta p {
-      margin: 12px 0;
-      text-align: left;
-    }
-
-    .blocco-risposta ul, .blocco-risposta ol {
-      margin: 15px 0;
-      padding-left: 20px;
-    }
-
-    .blocco-risposta li {
-      margin: 6px 0;
-    }
-
-    .blocco-risposta strong {
-      font-weight: 600;
     }
 
     .input-barra {
@@ -152,7 +115,6 @@
       border-radius: 24px;
       padding: 12px 20px;
       border: 1px solid #dadce0;
-      transition: all 0.3s ease;
     }
 
     .input-container:focus-within {
@@ -162,7 +124,6 @@
 
     .input-barra input {
       width: 100%;
-      padding: 0;
       font-size: 16px;
       border: none;
       background: transparent;
@@ -181,7 +142,6 @@
       padding: 8px;
       border-radius: 50%;
       margin-left: 12px;
-      transition: all 0.3s ease;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -211,14 +171,11 @@
       box-shadow: 0 2px 8px rgba(0,0,0,0.15);
       color: #1a73e8;
       font-weight: 500;
-      transition: all 0.3s ease;
     }
 
     #nuovaChat:hover {
       background: #1a73e8;
       color: white;
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
     }
 
     @media (max-width: 768px) {
@@ -229,11 +186,7 @@
       .blocco-risposta.bot {
         margin-right: 20px;
       }
-      
-      .input-barra {
-        padding: 15px;
-      }
-      
+
       #nuovaChat {
         bottom: 85px;
         right: 15px;
@@ -242,22 +195,21 @@
   </style>
 </head>
 <body>
+  <div class="overlay">
+    <div class="header">
+      <h1>🎨 ArtGPT</h1>
+    </div>
 
-  <div class="header">
-    <h1>🎨 ArteBot</h1>
-  </div>
-
-  <div class="contenitore">
-    <div id="chat" class="chat"></div>
+    <div class="contenitore">
+      <div id="chat" class="chat"></div>
+    </div>
   </div>
 
   <div class="input-barra">
     <div class="input-container">
       <input id="domanda" placeholder="Scrivi la tua domanda artistica..." />
       <button onclick="chiedi()">
-        <svg viewBox="0 0 24 24">
-          <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
-        </svg>
+        <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
       </button>
     </div>
   </div>
@@ -303,15 +255,12 @@
       const chat = document.getElementById("chat");
       const blocco = document.createElement("div");
       
-      // Determina il tipo di messaggio e applica la classe appropriata
       if (emoji === "🙋‍♂️") {
         blocco.className = "blocco-risposta utente";
         blocco.innerHTML = `<h3>${emoji} La tua domanda:</h3><p>${testo}</p>`;
       } else if (emoji === "🎨") {
         blocco.className = "blocco-risposta bot";
-        // Formatta la risposta del bot per una migliore leggibilità
-        const testoFormattato = formatRisposta(testo);
-        blocco.innerHTML = `<h3>${emoji} ArteBot risponde:</h3>${testoFormattato}`;
+        blocco.innerHTML = `<h3>${emoji} ArtGPT risponde:</h3>${formatRisposta(testo)}`;
       } else {
         blocco.className = "blocco-risposta";
         blocco.innerHTML = `<strong>${emoji}</strong> ${testo}`;
@@ -322,32 +271,20 @@
     }
 
     function formatRisposta(testo) {
-      // Divide il testo in paragrafi e aggiunge formattazione
-      let paragrafi = testo.split('\n\n');
+      const paragrafi = testo.split('\n\n');
       let html = '';
       
-      paragrafi.forEach((paragrafo, index) => {
-        if (paragrafo.trim() === '') return;
-        
-        // Se il paragrafo inizia con un numero o un punto, trattalo come una lista
-        if (/^\d+\./.test(paragrafo.trim()) || /^[•-]/.test(paragrafo.trim())) {
-          html += `<ul><li>${paragrafo.trim().replace(/^\d+\.\s*|^[•-]\s*/, '')}</li></ul>`;
-        } 
-        // Se contiene i due punti, potrebbe essere un titolo
-        else if (paragrafo.includes(':') && paragrafo.length < 100) {
-          html += `<h4 style="color: #fff; margin: 20px 0 10px 0; font-size: 16px;">${paragrafo}</h4>`;
+      paragrafi.forEach((p, i) => {
+        if (/^\d+\./.test(p.trim())) {
+          html += `<ul><li>${p.trim().replace(/^\d+\.\s*/, '')}</li></ul>`;
+        } else if (p.includes(':') && p.length < 100) {
+          html += `<h4 style="margin: 20px 0 10px 0; font-size: 16px;">${p}</h4>`;
+        } else {
+          html += `<p>${p}</p>`;
         }
-        // Paragrafo normale
-        else {
-          html += `<p>${paragrafo}</p>`;
-        }
-        
-        // Aggiungi spazio tra sezioni (tranne l'ultimo)
-        if (index < paragrafi.length - 1) {
-          html += '<div style="margin: 15px 0;"></div>';
-        }
+        if (i < paragrafi.length - 1) html += '<div style="margin: 15px 0;"></div>';
       });
-      
+
       return html || `<p>${testo}</p>`;
     }
 
