@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>ArteBot</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+      color: #202124;
+    }
+
+    .header {
+      background: #fff;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      padding: 20px 0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header h1 {
+      text-align: center;
+      margin: 0;
+      font-size: 32px;
+      font-weight: 300;
+      color: #1a73e8;
+      letter-spacing: -0.5px;
+    }
+
+    .contenitore {
+      padding: 40px 20px 120px;
+      max-width: 900px;
+      margin: auto;
+    }
+
+    .chat {
+      margin-bottom: 100px;
+    }
+
+    .blocco-risposta {
+      margin: 24px 0;
+      padding: 24px;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+      line-height: 1.6;
+      font-size: 15px;
+      transition: all 0.3s ease;
+    }
+
+    .blocco-risposta:hover {
+      box-shadow: 0 4px 8px rgba(0,0,0,0.12), 0 2px 4px rgba(0,0,0,0.08);
+      transform: translateY(-2px);
+    }
+
+    .blocco-risposta.utente {
+      background: #1a73e8;
+      color: white;
+      margin-left: 80px;
+      position: relative;
+    }
+
+    .blocco-risposta.utente::before {
+      content: '';
+      position: absolute;
+      top: 15px;
+      left: -10px;
+      width: 0;
+      height: 0;
+      border-top: 10px solid transparent;
+      border-bottom: 10px solid transparent;
+      border-right: 10px solid #1a73e8;
+    }
+
+    .blocco-risposta.bot {
+      background: #fff;
+      color: #202124;
+      margin-right: 80px;
+      border-left: 4px solid #34a853;
+      position: relative;
+    }
+
+    .blocco-risposta.bot::before {
+      content: '';
+      position: absolute;
+      top: 15px;
+      right: -10px;
+      width: 0;
+      height: 0;
+      border-top: 10px solid transparent;
+      border-bottom: 10px solid transparent;
+      border-left: 10px solid #fff;
+    }
+
+    .blocco-risposta h3 {
+      margin: 0 0 16px 0;
+      font-size: 16px;
+      font-weight: 500;
+      opacity: 0.9;
+    }
+
+    .blocco-risposta.utente h3 {
+      color: rgba(255,255,255,0.9);
+    }
+
+    .blocco-risposta.bot h3 {
+      color: #34a853;
+    }
+
+    .blocco-risposta p {
+      margin: 12px 0;
+      text-align: left;
+    }
+
+    .blocco-risposta ul, .blocco-risposta ol {
+      margin: 15px 0;
+      padding-left: 20px;
+    }
+
+    .blocco-risposta li {
+      margin: 6px 0;
+    }
+
+    .blocco-risposta strong {
+      font-weight: 600;
+    }
+
+    .input-barra {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #fff;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-top: 1px solid #e8eaed;
+      box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+    }
+
+    .input-container {
+      display: flex;
+      align-items: center;
+      max-width: 700px;
+      width: 100%;
+      background: #f8f9fa;
+      border-radius: 24px;
+      padding: 12px 20px;
+      border: 1px solid #dadce0;
+      transition: all 0.3s ease;
+    }
+
+    .input-container:focus-within {
+      border-color: #1a73e8;
+      box-shadow: 0 0 0 1px #1a73e8;
+    }
+
+    .input-barra input {
+      width: 100%;
+      padding: 0;
+      font-size: 16px;
+      border: none;
+      background: transparent;
+      outline: none;
+      color: #202124;
+    }
+
+    .input-barra input::placeholder {
+      color: #5f6368;
+    }
+
+    .input-barra button {
+      background: #1a73e8;
+      border: none;
+      cursor: pointer;
+      padding: 8px;
+      border-radius: 50%;
+      margin-left: 12px;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .input-barra button:hover {
+      background: #1557b7;
+      transform: scale(1.05);
+    }
+
+    .input-barra button svg {
+      width: 20px;
+      height: 20px;
+      fill: white;
+    }
+
+    #nuovaChat {
+      position: fixed;
+      bottom: 100px;
+      right: 30px;
+      background: #fff;
+      border: 1px solid #dadce0;
+      border-radius: 24px;
+      padding: 12px 20px;
+      font-size: 14px;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      color: #1a73e8;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    #nuovaChat:hover {
+      background: #1a73e8;
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+
+    @media (max-width: 768px) {
+      .blocco-risposta.utente {
+        margin-left: 20px;
+      }
+      
+      .blocco-risposta.bot {
+        margin-right: 20px;
+      }
+      
+      .input-barra {
+        padding: 15px;
+      }
+      
+      #nuovaChat {
+        bottom: 85px;
+        right: 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <h1>🎨 ArteBot</h1>
+  </div>
+
+  <div class="contenitore">
+    <div id="chat" class="chat"></div>
+  </div>
+
+  <div class="input-barra">
+    <div class="input-container">
+      <input id="domanda" placeholder="Scrivi la tua domanda artistica..." />
+      <button onclick="chiedi()">
+        <svg viewBox="0 0 24 24">
+          <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <button id="nuovaChat" onclick="resettaChat()">🆕 Nuova chat</button>
+
+  <script>
+    async function chiedi() {
+      const input = document.getElementById("domanda");
+      const domanda = input.value.trim();
+      if (!domanda) return;
+
+      aggiungiMessaggio("🙋‍♂️", domanda);
+      input.value = "";
+
+      try {
+        const res = await fetch("/chiedi", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ domanda })
+        });
+
+        const data = await res.json();
+        aggiungiMessaggio("🎨", data.risposta);
+      } catch (error) {
+        aggiungiMessaggio("❌", "Errore di rete. Riprova.");
+      }
+    }
+
+    async function resettaChat() {
+      const res = await fetch("/chiedi", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reset: true })
+      });
+
+      const data = await res.json();
+      document.getElementById("chat").innerHTML = "";
+      aggiungiMessaggio("🔄", data.risposta);
+    }
+
+    function aggiungiMessaggio(emoji, testo) {
+      const chat = document.getElementById("chat");
+      const blocco = document.createElement("div");
+      
+      // Determina il tipo di messaggio e applica la classe appropriata
+      if (emoji === "🙋‍♂️") {
+        blocco.className = "blocco-risposta utente";
+        blocco.innerHTML = `<h3>${emoji} La tua domanda:</h3><p>${testo}</p>`;
+      } else if (emoji === "🎨") {
+        blocco.className = "blocco-risposta bot";
+        // Formatta la risposta del bot per una migliore leggibilità
+        const testoFormattato = formatRisposta(testo);
+        blocco.innerHTML = `<h3>${emoji} ArteBot risponde:</h3>${testoFormattato}`;
+      } else {
+        blocco.className = "blocco-risposta";
+        blocco.innerHTML = `<strong>${emoji}</strong> ${testo}`;
+      }
+      
+      chat.appendChild(blocco);
+      chat.scrollTop = chat.scrollHeight;
+    }
+
+    function formatRisposta(testo) {
+      // Divide il testo in paragrafi e aggiunge formattazione
+      let paragrafi = testo.split('\n\n');
+      let html = '';
+      
+      paragrafi.forEach((paragrafo, index) => {
+        if (paragrafo.trim() === '') return;
+        
+        // Se il paragrafo inizia con un numero o un punto, trattalo come una lista
+        if (/^\d+\./.test(paragrafo.trim()) || /^[•-]/.test(paragrafo.trim())) {
+          html += `<ul><li>${paragrafo.trim().replace(/^\d+\.\s*|^[•-]\s*/, '')}</li></ul>`;
+        } 
+        // Se contiene i due punti, potrebbe essere un titolo
+        else if (paragrafo.includes(':') && paragrafo.length < 100) {
+          html += `<h4 style="color: #fff; margin: 20px 0 10px 0; font-size: 16px;">${paragrafo}</h4>`;
+        }
+        // Paragrafo normale
+        else {
+          html += `<p>${paragrafo}</p>`;
+        }
+        
+        // Aggiungi spazio tra sezioni (tranne l'ultimo)
+        if (index < paragrafi.length - 1) {
+          html += '<div style="margin: 15px 0;"></div>';
+        }
+      });
+      
+      return html || `<p>${testo}</p>`;
+    }
+
+    document.getElementById("domanda").addEventListener("keypress", function(e) {
+      if (e.key === "Enter") chiedi();
+    });
+  </script>
+</body>
+</html>
