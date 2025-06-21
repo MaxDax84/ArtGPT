@@ -8,88 +8,37 @@
       margin: 0;
       padding: 0;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-image: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1350&q=80');
+      background: url('https://artgpt.onrender.com/background.jpg') no-repeat center center fixed;
       background-size: cover;
-      background-position: center;
-      background-attachment: fixed;
-      background-repeat: no-repeat;
       min-height: 100vh;
       color: #202124;
     }
 
     .overlay {
-      background: rgba(255, 255, 255, 0.85);
-      min-height: 100vh;
-    }
-
-    .header {
-      padding: 20px 0;
-      text-align: center;
-      background: transparent;
-    }
-
-    .header h1 {
-      margin: 0;
-      font-size: 32px;
-      font-weight: 300;
-      color: #1a73e8;
-      letter-spacing: -0.5px;
-    }
-
-    .contenitore {
-      padding: 40px 20px 120px;
+      background-color: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(4px);
+      border-radius: 18px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+      padding: 25px;
+      margin: 20px auto;
       max-width: 900px;
-      margin: auto;
+      line-height: 1.7;
     }
 
-    .chat {
-      margin-bottom: 100px;
-    }
-
-    .blocco-risposta {
-      margin: 24px 0;
-      padding: 24px;
-      background: #fff;
-      border-radius: 16px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-      line-height: 1.6;
-      font-size: 15px;
-      transition: all 0.3s ease;
-    }
-
-    .blocco-risposta.utente {
-      background: #1a73e8;
+    .utente {
+      background-color: rgba(26, 115, 232, 0.9);
       color: white;
-      margin-left: 80px;
-      position: relative;
+      font-weight: bold;
+      margin-top: 60px;
     }
 
-    .blocco-risposta.utente::before {
-      content: '';
-      position: absolute;
-      top: 15px;
-      left: -10px;
-      border-top: 10px solid transparent;
-      border-bottom: 10px solid transparent;
-      border-right: 10px solid #1a73e8;
+    .bot {
+      background-color: rgba(255, 255, 255, 0.95);
+      border-left: 6px solid #34a853;
     }
 
-    .blocco-risposta.bot {
-      background: #fff;
-      color: #202124;
-      margin-right: 80px;
-      border-left: 4px solid #34a853;
-      position: relative;
-    }
-
-    .blocco-risposta.bot::before {
-      content: '';
-      position: absolute;
-      top: 15px;
-      right: -10px;
-      border-top: 10px solid transparent;
-      border-bottom: 10px solid transparent;
-      border-left: 10px solid #fff;
+    h3 {
+      margin-top: 0;
     }
 
     .input-barra {
@@ -97,62 +46,43 @@
       bottom: 0;
       left: 0;
       right: 0;
-      background: #fff;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(4px);
       padding: 20px;
       display: flex;
       justify-content: center;
-      align-items: center;
-      border-top: 1px solid #e8eaed;
-      box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+      border-top: 1px solid #ccc;
     }
 
     .input-container {
       display: flex;
       align-items: center;
-      max-width: 700px;
       width: 100%;
-      background: #f8f9fa;
+      max-width: 700px;
+      background: #f1f3f4;
       border-radius: 24px;
-      padding: 12px 20px;
+      padding: 10px 20px;
       border: 1px solid #dadce0;
     }
 
-    .input-container:focus-within {
-      border-color: #1a73e8;
-      box-shadow: 0 0 0 1px #1a73e8;
-    }
-
-    .input-barra input {
-      width: 100%;
+    .input-container input {
+      flex: 1;
       font-size: 16px;
       border: none;
       background: transparent;
       outline: none;
-      color: #202124;
     }
 
-    .input-barra input::placeholder {
-      color: #5f6368;
-    }
-
-    .input-barra button {
+    .input-container button {
       background: #1a73e8;
       border: none;
-      cursor: pointer;
-      padding: 8px;
+      padding: 10px;
       border-radius: 50%;
-      margin-left: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      margin-left: 10px;
+      cursor: pointer;
     }
 
-    .input-barra button:hover {
-      background: #1557b7;
-      transform: scale(1.05);
-    }
-
-    .input-barra button svg {
+    .input-container button svg {
       width: 20px;
       height: 20px;
       fill: white;
@@ -162,48 +92,32 @@
       position: fixed;
       bottom: 100px;
       right: 30px;
-      background: #fff;
+      background: white;
       border: 1px solid #dadce0;
-      border-radius: 24px;
-      padding: 12px 20px;
+      border-radius: 20px;
+      padding: 10px 18px;
       font-size: 14px;
       cursor: pointer;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
       color: #1a73e8;
-      font-weight: 500;
-    }
-
-    #nuovaChat:hover {
-      background: #1a73e8;
-      color: white;
+      font-weight: bold;
     }
 
     @media (max-width: 768px) {
-      .blocco-risposta.utente {
-        margin-left: 20px;
-      }
-      
-      .blocco-risposta.bot {
-        margin-right: 20px;
+      .overlay {
+        margin: 10px;
+        padding: 15px;
       }
 
       #nuovaChat {
-        bottom: 85px;
+        bottom: 90px;
         right: 15px;
       }
     }
   </style>
 </head>
 <body>
-  <div class="overlay">
-    <div class="header">
-      <h1>🎨 ArtGPT</h1>
-    </div>
 
-    <div class="contenitore">
-      <div id="chat" class="chat"></div>
-    </div>
-  </div>
+  <div id="chat"></div>
 
   <div class="input-barra">
     <div class="input-container">
@@ -214,7 +128,7 @@
     </div>
   </div>
 
-  <button id="nuovaChat" onclick="resettaChat()">🆕 Nuova chat</button>
+  <button id="nuovaChat" onclick="resettaChat()">🔁 Nuova chat</button>
 
   <script>
     async function chiedi() {
@@ -222,7 +136,7 @@
       const domanda = input.value.trim();
       if (!domanda) return;
 
-      aggiungiMessaggio("🙋‍♂️", domanda);
+      aggiungiMessaggio("🙋‍♂️ La tua domanda:", domanda, 'utente');
       input.value = "";
 
       try {
@@ -233,10 +147,23 @@
         });
 
         const data = await res.json();
-        aggiungiMessaggio("🎨", data.risposta);
+        aggiungiMessaggio("🎨 ArtGPT risponde:", data.risposta, 'bot');
       } catch (error) {
-        aggiungiMessaggio("❌", "Errore di rete. Riprova.");
+        aggiungiMessaggio("❌ Errore:", "Errore di rete. Riprova.", '');
       }
+    }
+
+    function aggiungiMessaggio(titolo, contenuto, tipo) {
+      const container = document.createElement("div");
+      container.className = `overlay ${tipo}`;
+      container.innerHTML = `<h3>${titolo}</h3>${formattaTesto(contenuto)}`;
+      document.getElementById("chat").appendChild(container);
+      window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    function formattaTesto(testo) {
+      const paragrafi = testo.trim().split(/\n{2,}/);
+      return paragrafi.map(p => `<p>${p.replace(/\n/g, '<br>')}</p>`).join("");
     }
 
     async function resettaChat() {
@@ -248,44 +175,7 @@
 
       const data = await res.json();
       document.getElementById("chat").innerHTML = "";
-      aggiungiMessaggio("🔄", data.risposta);
-    }
-
-    function aggiungiMessaggio(emoji, testo) {
-      const chat = document.getElementById("chat");
-      const blocco = document.createElement("div");
-      
-      if (emoji === "🙋‍♂️") {
-        blocco.className = "blocco-risposta utente";
-        blocco.innerHTML = `<h3>${emoji} La tua domanda:</h3><p>${testo}</p>`;
-      } else if (emoji === "🎨") {
-        blocco.className = "blocco-risposta bot";
-        blocco.innerHTML = `<h3>${emoji} ArtGPT risponde:</h3>${formatRisposta(testo)}`;
-      } else {
-        blocco.className = "blocco-risposta";
-        blocco.innerHTML = `<strong>${emoji}</strong> ${testo}`;
-      }
-      
-      chat.appendChild(blocco);
-      chat.scrollTop = chat.scrollHeight;
-    }
-
-    function formatRisposta(testo) {
-      const paragrafi = testo.split('\n\n');
-      let html = '';
-      
-      paragrafi.forEach((p, i) => {
-        if (/^\d+\./.test(p.trim())) {
-          html += `<ul><li>${p.trim().replace(/^\d+\.\s*/, '')}</li></ul>`;
-        } else if (p.includes(':') && p.length < 100) {
-          html += `<h4 style="margin: 20px 0 10px 0; font-size: 16px;">${p}</h4>`;
-        } else {
-          html += `<p>${p}</p>`;
-        }
-        if (i < paragrafi.length - 1) html += '<div style="margin: 15px 0;"></div>';
-      });
-
-      return html || `<p>${testo}</p>`;
+      aggiungiMessaggio("🆕", data.risposta, 'bot');
     }
 
     document.getElementById("domanda").addEventListener("keypress", function(e) {
