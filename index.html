@@ -3,19 +3,19 @@
 <head>
   <meta charset="UTF-8" />
   <title>ArtGPT</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap" rel="stylesheet">
   <style>
     body {
       margin: 0;
       padding: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: 'Playfair Display', serif;
       background: url('https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1920&q=80') no-repeat center center fixed;
       background-size: cover;
       color: #202124;
     }
 
-
     #chat {
-      padding-bottom: 170px; /* spazio per la barra */
+      padding-bottom: 180px;
     }
 
     .overlay {
@@ -27,6 +27,16 @@
       margin: 20px auto;
       max-width: 900px;
       line-height: 1.7;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeInUp 0.5s ease forwards;
+    }
+
+    @keyframes fadeInUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     .utente {
@@ -43,6 +53,14 @@
 
     h3 {
       margin-top: 0;
+      display: flex;
+      align-items: center;
+      font-size: 1.1em;
+    }
+
+    h3 span.icon {
+      margin-right: 10px;
+      font-size: 1.3em;
     }
 
     .input-barra {
@@ -50,12 +68,12 @@
       bottom: 0;
       left: 0;
       right: 0;
-      background: rgba(255, 255, 255, 0.9);
-      backdrop-filter: blur(6px);
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(8px);
       padding: 20px;
       display: flex;
       justify-content: center;
-      border-top: 1px solid #ccc;
+      border-top: 1px solid rgba(255, 255, 255, 0.2);
       z-index: 100;
     }
 
@@ -76,6 +94,12 @@
       border: none;
       background: transparent;
       outline: none;
+      color: #202124;
+      font-family: 'Playfair Display', serif;
+    }
+
+    .input-container input::placeholder {
+      color: #666;
     }
 
     .input-container button {
@@ -146,7 +170,7 @@
       const domanda = input.value.trim();
       if (!domanda) return;
 
-      aggiungiMessaggio("🙋‍♂️ La tua domanda:", domanda, 'utente');
+      aggiungiMessaggio("🙋‍♂️", "La tua domanda:", domanda, 'utente');
       input.value = "";
 
       try {
@@ -157,18 +181,18 @@
         });
 
         const data = await res.json();
-        aggiungiMessaggio("🎨 ArtGPT risponde:", data.risposta, 'bot');
+        aggiungiMessaggio("🎨", "ArtGPT risponde:", data.risposta, 'bot');
       } catch (error) {
-        aggiungiMessaggio("❌ Errore:", "Errore di rete. Riprova.", '');
+        aggiungiMessaggio("❌", "Errore:", "Errore di rete. Riprova.", '');
       }
     }
 
-    function aggiungiMessaggio(titolo, contenuto, tipo) {
+    function aggiungiMessaggio(emoji, titolo, contenuto, tipo) {
       const container = document.createElement("div");
       container.className = `overlay ${tipo}`;
-      container.innerHTML = `<h3>${titolo}</h3>${formattaTesto(contenuto)}`;
+      container.innerHTML = `<h3><span class="icon">${emoji}</span>${titolo}</h3>${formattaTesto(contenuto)}`;
       document.getElementById("chat").appendChild(container);
-      window.scrollTo(0, document.body.scrollHeight);
+      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
     }
 
     function formattaTesto(testo) {
@@ -185,7 +209,7 @@
 
       const data = await res.json();
       document.getElementById("chat").innerHTML = "";
-      aggiungiMessaggio("🆕", data.risposta, 'bot');
+      aggiungiMessaggio("🆕", "", data.risposta, 'bot');
     }
 
     document.getElementById("domanda").addEventListener("keypress", function(e) {
