@@ -3,15 +3,36 @@
 <head>
   <meta charset="UTF-8" />
   <title>ArtGPT</title>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&family=Raleway:wght@400;700&display=swap" rel="stylesheet">
   <style>
+    /* --- Variables for themes --- */
+    :root {
+      --bg-overlay: rgba(255, 255, 255, 0.85);
+      --text-color: #202124;
+      --bot-bg: rgba(255, 255, 255, 0.97);
+      --user-bg: rgba(26, 115, 232, 0.95);
+    }
+
+    body.dark-mode {
+      --bg-overlay: rgba(32, 33, 36, 0.85);
+      --text-color: #e8eaed;
+      --bot-bg: rgba(60, 64, 67, 0.95);
+      --user-bg: rgba(138, 180, 248, 0.85);
+      background-color: #202124;
+    }
+
     body {
       margin: 0;
       padding: 0;
       font-family: 'Playfair Display', serif;
       background: url('https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1920&q=80') no-repeat center center fixed;
       background-size: cover;
-      color: #202124;
+      color: var(--text-color);
+      transition: background 0.6s ease, color 0.6s ease;
+    }
+
+    h3, button, input {
+      font-family: 'Raleway', sans-serif;
     }
 
     #chat {
@@ -19,7 +40,7 @@
     }
 
     .overlay {
-      background-color: rgba(255, 255, 255, 0.85);
+      background-color: var(--bg-overlay);
       backdrop-filter: blur(4px);
       border-radius: 18px;
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
@@ -28,11 +49,11 @@
       max-width: 900px;
       line-height: 1.7;
       opacity: 0;
-      transform: translateY(20px);
-      animation: fadeInUp 0.5s ease forwards;
+      transform: translateY(40px);
+      animation: slideFade 0.6s ease-out forwards;
     }
 
-    @keyframes fadeInUp {
+    @keyframes slideFade {
       to {
         opacity: 1;
         transform: translateY(0);
@@ -40,14 +61,14 @@
     }
 
     .utente {
-      background-color: rgba(26, 115, 232, 0.95);
+      background-color: var(--user-bg);
       color: white;
       font-weight: bold;
       margin-top: 60px;
     }
 
     .bot {
-      background-color: rgba(255, 255, 255, 0.97);
+      background-color: var(--bot-bg);
       border-left: 6px solid #34a853;
     }
 
@@ -109,6 +130,11 @@
       border-radius: 50%;
       margin-left: 10px;
       cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .input-container button:hover {
+      background: #1669c1;
     }
 
     .input-container button svg {
@@ -130,6 +156,30 @@
       color: #1a73e8;
       font-weight: bold;
       z-index: 99;
+      transition: background 0.3s ease;
+    }
+
+    #nuovaChat:hover {
+      background: #f1f3f4;
+    }
+
+    #themeToggle {
+      position: fixed;
+      top: 20px;
+      right: 30px;
+      background: rgba(0, 0, 0, 0.6);
+      color: white;
+      border: none;
+      padding: 10px 14px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 18px;
+      z-index: 101;
+      transition: background 0.3s ease;
+    }
+
+    #themeToggle:hover {
+      background: rgba(0, 0, 0, 0.8);
     }
 
     @media (max-width: 768px) {
@@ -150,6 +200,8 @@
   </style>
 </head>
 <body>
+
+  <button id="themeToggle" title="Cambia tema">🌓</button>
 
   <div id="chat"></div>
 
@@ -215,6 +267,11 @@
     document.getElementById("domanda").addEventListener("keypress", function(e) {
       if (e.key === "Enter") chiedi();
     });
+
+    document.getElementById("themeToggle").addEventListener("click", () => {
+      document.body.classList.toggle("dark-mode");
+    });
   </script>
+
 </body>
 </html>
