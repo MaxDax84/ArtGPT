@@ -39,7 +39,7 @@
       max-height: 85vh;
       overflow-y: auto;
       scroll-behavior: smooth;
-      padding-bottom: 180px;
+      padding-bottom: 220px;
     }
 
     .overlay {
@@ -100,7 +100,8 @@
       backdrop-filter: blur(8px);
       padding: 20px;
       display: flex;
-      justify-content: center;
+      flex-direction: column;
+      align-items: center;
       border-top: 1px solid rgba(255, 255, 255, 0.2);
       z-index: 100;
     }
@@ -116,7 +117,7 @@
       border: 1px solid #dadce0;
     }
 
-    .input-container input {
+    .input-container input[type="text"] {
       flex: 1;
       font-size: 16px;
       border: none;
@@ -128,7 +129,6 @@
     .input-container input::placeholder {
       color: #666;
     }
-
     .input-container button {
       background: #1a73e8;
       border: none;
@@ -147,6 +147,19 @@
       width: 20px;
       height: 20px;
       fill: white;
+    }
+
+    .upload-img {
+      margin-top: 10px;
+      color: white;
+      font-size: 14px;
+    }
+
+    #anteprimaImg {
+      max-width: 200px;
+      margin-top: 10px;
+      border-radius: 10px;
+      display: none;
     }
 
     #nuovaChat, #scaricaPDF {
@@ -227,15 +240,21 @@
 </head>
 <body>
   <button id="themeToggle" title="Cambia tema">🌓</button>
+
   <div id="chat"></div>
+
   <div id="loader"><div class="dots-typing"><div></div></div></div>
 
   <div class="input-barra">
     <div class="input-container">
-      <input id="domanda" placeholder="Scrivi la tua domanda artistica..." />
+      <input type="text" id="domanda" placeholder="Scrivi la tua domanda artistica..." />
       <button onclick="chiedi()">
         <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
       </button>
+    </div>
+    <div class="upload-img">
+      <input type="file" accept="image/*" id="imgInput" />
+      <img id="anteprimaImg" />
     </div>
   </div>
 
@@ -330,6 +349,19 @@
       }
       doc.save("ArtGPT_conversazione.pdf");
     }
+
+    document.getElementById("imgInput").addEventListener("change", function(e) {
+      const img = e.target.files[0];
+      const anteprima = document.getElementById("anteprimaImg");
+      if (img) {
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+          anteprima.src = evt.target.result;
+          anteprima.style.display = "block";
+        };
+        reader.readAsDataURL(img);
+      }
+    });
 
     window.onload = caricaStorage;
     document.getElementById("domanda").addEventListener("keypress", function(e) {
