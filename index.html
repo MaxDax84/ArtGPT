@@ -5,7 +5,6 @@
   <title>ArtGPT</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&family=Raleway:wght@400;700&display=swap" rel="stylesheet">
   <style>
-    /* --- Variables for themes --- */
     :root {
       --bg-overlay: rgba(255, 255, 255, 0.85);
       --text-color: #202124;
@@ -36,6 +35,9 @@
     }
 
     #chat {
+      max-height: 85vh;
+      overflow-y: auto;
+      scroll-behavior: smooth;
       padding-bottom: 180px;
     }
 
@@ -73,10 +75,14 @@
     }
 
     h3 {
+      font-size: 1.2em;
+      font-weight: 700;
       margin-top: 0;
+      margin-bottom: 10px;
       display: flex;
       align-items: center;
-      font-size: 1.1em;
+      border-bottom: 1px solid rgba(0,0,0,0.1);
+      padding-bottom: 4px;
     }
 
     h3 span.icon {
@@ -182,6 +188,49 @@
       background: rgba(0, 0, 0, 0.8);
     }
 
+    #loader {
+      display: none;
+      text-align: center;
+      margin-top: 30px;
+    }
+
+    .dots-typing {
+      display: inline-block;
+      width: 60px;
+      height: 20px;
+      position: relative;
+    }
+
+    .dots-typing::before, .dots-typing::after, .dots-typing div {
+      content: '';
+      position: absolute;
+      top: 0;
+      width: 12px;
+      height: 12px;
+      background: #1a73e8;
+      border-radius: 50%;
+      animation: bounce 1.4s infinite ease-in-out both;
+    }
+
+    .dots-typing::before {
+      left: 0;
+      animation-delay: -0.32s;
+    }
+
+    .dots-typing div {
+      left: 24px;
+      animation-delay: -0.16s;
+    }
+
+    .dots-typing::after {
+      left: 48px;
+    }
+
+    @keyframes bounce {
+      0%, 80%, 100% { transform: scale(0); }
+      40% { transform: scale(1.0); }
+    }
+
     @media (max-width: 768px) {
       .overlay {
         margin: 10px;
@@ -205,6 +254,10 @@
 
   <div id="chat"></div>
 
+  <div id="loader">
+    <div class="dots-typing"><div></div></div>
+  </div>
+
   <div class="input-barra">
     <div class="input-container">
       <input id="domanda" placeholder="Scrivi la tua domanda artistica..." />
@@ -224,6 +277,7 @@
 
       aggiungiMessaggio("🙋‍♂️", "La tua domanda:", domanda, 'utente');
       input.value = "";
+      document.getElementById("loader").style.display = "block";
 
       try {
         const res = await fetch("/chiedi", {
@@ -233,8 +287,10 @@
         });
 
         const data = await res.json();
+        document.getElementById("loader").style.display = "none";
         aggiungiMessaggio("🎨", "ArtGPT risponde:", data.risposta, 'bot');
       } catch (error) {
+        document.getElementById("loader").style.display = "none";
         aggiungiMessaggio("❌", "Errore:", "Errore di rete. Riprova.", '');
       }
     }
@@ -242,7 +298,11 @@
     function aggiungiMessaggio(emoji, titolo, contenuto, tipo) {
       const container = document.createElement("div");
       container.className = `overlay ${tipo}`;
-      container.innerHTML = `<h3><span class="icon">${emoji}</span>${titolo}</h3>${formattaTesto(contenuto)}`;
+      let imgHTML = "";
+      if (tipo === "bot") {
+        imgHTML = `<img src="https://source.unsplash.com/800x400/?art,painting" style="width:100%; border-radius: 12px; margin-bottom: 16px;">`;
+      }
+      container.innerHTML = `<h3><span class="icon">${emoji}</span>${titolo}</h3>${imgHTML}${formattaTesto(contenuto)}`;
       document.getElementById("chat").appendChild(container);
       window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
     }
@@ -272,6 +332,5 @@
       document.body.classList.toggle("dark-mode");
     });
   </script>
-
 </body>
 </html>
