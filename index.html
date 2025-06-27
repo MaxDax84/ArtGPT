@@ -1,39 +1,18 @@
-
 <!DOCTYPE html>
 <html lang="it">
 <head>
   <meta charset="UTF-8" />
   <title>ArtGPT</title>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&family=Raleway:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
-    :root {
-      --bg-overlay: rgba(255, 255, 255, 0.85);
-      --text-color: #202124;
-      --bot-bg: rgba(255, 255, 255, 0.97);
-      --user-bg: rgba(26, 115, 232, 0.95);
-    }
-
-    body.dark-mode {
-      --bg-overlay: rgba(32, 33, 36, 0.85);
-      --text-color: #e8eaed;
-      --bot-bg: rgba(60, 64, 67, 0.95);
-      --user-bg: rgba(138, 180, 248, 0.85);
-      background-color: #202124;
-    }
-
     body {
       margin: 0;
       padding: 0;
       font-family: 'Playfair Display', serif;
       background: url('https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1920&q=80') no-repeat center center fixed;
       background-size: cover;
-      color: var(--text-color);
-      transition: background 0.6s ease, color 0.6s ease;
-    }
-
-    h3, button, input {
-      font-family: 'Raleway', sans-serif;
+      color: #202124;
     }
 
     #chat {
@@ -44,7 +23,7 @@
     }
 
     .overlay {
-      background-color: var(--bg-overlay);
+      background-color: rgba(255, 255, 255, 0.85);
       backdrop-filter: blur(4px);
       border-radius: 18px;
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
@@ -53,11 +32,11 @@
       max-width: 900px;
       line-height: 1.7;
       opacity: 0;
-      transform: translateY(40px);
-      animation: slideFade 0.6s ease-out forwards;
+      transform: translateY(20px);
+      animation: fadeInUp 0.5s ease forwards;
     }
 
-    @keyframes slideFade {
+    @keyframes fadeInUp {
       to {
         opacity: 1;
         transform: translateY(0);
@@ -65,26 +44,22 @@
     }
 
     .utente {
-      background-color: var(--user-bg);
+      background-color: rgba(26, 115, 232, 0.95);
       color: white;
       font-weight: bold;
       margin-top: 60px;
     }
 
     .bot {
-      background-color: var(--bot-bg);
+      background-color: rgba(255, 255, 255, 0.97);
       border-left: 6px solid #34a853;
     }
 
     h3 {
-      font-size: 1.2em;
-      font-weight: 700;
       margin-top: 0;
-      margin-bottom: 10px;
       display: flex;
       align-items: center;
-      border-bottom: 1px solid rgba(0,0,0,0.1);
-      padding-bottom: 4px;
+      font-size: 1.1em;
     }
 
     h3 span.icon {
@@ -116,6 +91,7 @@
       border-radius: 24px;
       padding: 10px 20px;
       border: 1px solid #dadce0;
+      margin-bottom: 10px;
     }
 
     .input-container input[type="text"] {
@@ -125,6 +101,7 @@
       background: transparent;
       outline: none;
       color: #202124;
+      font-family: 'Playfair Display', serif;
     }
 
     .input-container input::placeholder {
@@ -138,11 +115,6 @@
       border-radius: 50%;
       margin-left: 10px;
       cursor: pointer;
-      transition: background 0.3s ease;
-    }
-
-    .input-container button:hover {
-      background: #1669c1;
     }
 
     .input-container button svg {
@@ -151,21 +123,14 @@
       fill: white;
     }
 
-    .upload-img {
-      margin-top: 10px;
-      color: white;
-      font-size: 14px;
+    #fileInput {
+      margin-top: 5px;
     }
 
-    #anteprimaImg {
-      max-width: 200px;
-      margin-top: 10px;
-      border-radius: 10px;
-      display: none;
-    }
-
-    #nuovaChat, #scaricaPDF {
+    #nuovaChat {
       position: fixed;
+      bottom: 160px;
+      right: 30px;
       background: white;
       border: 1px solid #dadce0;
       border-radius: 20px;
@@ -175,147 +140,127 @@
       color: #1a73e8;
       font-weight: bold;
       z-index: 99;
-      transition: background 0.3s ease;
-    }
-
-    #nuovaChat:hover, #scaricaPDF:hover {
-      background: #f1f3f4;
-    }
-
-    #nuovaChat {
-      bottom: 160px;
-      right: 30px;
     }
 
     #scaricaPDF {
+      position: fixed;
       bottom: 210px;
       right: 30px;
-    }
-
-    #themeToggle {
-      position: fixed;
-      top: 20px;
-      right: 30px;
-      background: rgba(0, 0, 0, 0.6);
-      color: white;
-      border: none;
-      padding: 10px 14px;
-      border-radius: 50%;
+      background: white;
+      border: 1px solid #dadce0;
+      border-radius: 20px;
+      padding: 10px 18px;
+      font-size: 14px;
       cursor: pointer;
-      font-size: 18px;
-      z-index: 101;
+      color: #1a73e8;
+      font-weight: bold;
+      z-index: 99;
     }
 
-    #loader {
-      display: none;
-      text-align: center;
-      margin-top: 30px;
-    }
+    @media (max-width: 768px) {
+      .overlay {
+        margin: 10px;
+        padding: 15px;
+      }
 
-    .dots-typing {
-      display: inline-block;
-      width: 60px;
-      height: 20px;
-      position: relative;
-    }
+      #nuovaChat, #scaricaPDF {
+        bottom: 120px;
+        right: 15px;
+      }
 
-    .dots-typing::before, .dots-typing::after, .dots-typing div {
-      content: '';
-      position: absolute;
-      top: 0;
-      width: 12px;
-      height: 12px;
-      background: #1a73e8;
-      border-radius: 50%;
-      animation: bounce 1.4s infinite ease-in-out both;
-    }
-
-    .dots-typing::before { left: 0; animation-delay: -0.32s; }
-    .dots-typing div { left: 24px; animation-delay: -0.16s; }
-    .dots-typing::after { left: 48px; }
-
-    @keyframes bounce {
-      0%, 80%, 100% { transform: scale(0); }
-      40% { transform: scale(1.0); }
+      .input-barra {
+        padding: 15px;
+      }
     }
   </style>
 </head>
 <body>
-  <button id="themeToggle" title="Cambia tema">🌓</button>
+
   <div id="chat"></div>
-  <div id="loader"><div class="dots-typing"><div></div></div></div>
 
   <div class="input-barra">
     <div class="input-container">
-      <input type="text" id="domanda" placeholder="Scrivi la tua domanda artistica..." />
+      <input id="domanda" type="text" placeholder="Scrivi la tua domanda artistica..." />
       <button onclick="chiedi()">
         <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
       </button>
     </div>
-    <div class="upload-img">
-      <input type="file" accept="image/*" id="imgInput" />
-      <img id="anteprimaImg" />
-    </div>
+    <input type="file" id="fileInput" accept="image/*" />
   </div>
 
-  <button id="nuovaChat" onclick="resettaChat()">🔁 Nuova chat</button>
   <button id="scaricaPDF" onclick="scaricaPDF()">📄 Scarica PDF</button>
+  <button id="nuovaChat" onclick="resettaChat()">🔁 Nuova chat</button>
 
   <script>
+    function aggiungiImmagine(src) {
+      const img = document.createElement("img");
+      img.src = src;
+      img.style.maxWidth = "200px";
+      img.style.display = "block";
+      img.style.margin = "15px auto";
+      document.getElementById("chat").appendChild(img);
+    }
+
     async function chiedi() {
       const input = document.getElementById("domanda");
+      const fileInput = document.getElementById("fileInput");
       const domanda = input.value.trim();
-      if (!domanda) return;
+      const file = fileInput.files[0];
 
-      aggiungiMessaggio("🙋‍♂️", "La tua domanda:", domanda, 'utente');
-      input.value = "";
-      document.getElementById("loader").style.display = "block";
-
-      try {
-        const res = await fetch("/chiedi", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ domanda })
-        });
-
-        const data = await res.json();
-        document.getElementById("loader").style.display = "none";
-        aggiungiMessaggio("🎨", "ArtGPT risponde:", data.risposta, 'bot');
-      } catch {
-        document.getElementById("loader").style.display = "none";
-        aggiungiMessaggio("❌", "Errore:", "Errore di rete. Riprova.", '');
+      if (domanda) {
+        aggiungiMessaggio("🙋‍♂️", "La tua domanda:", domanda, 'utente');
       }
+
+      if (file && file.type.startsWith("image/")) {
+        const reader = new FileReader();
+        reader.onload = async function () {
+          const base64Image = reader.result;
+          aggiungiImmagine(base64Image);
+          try {
+            const res = await fetch("/analizza", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ imageData: base64Image })
+            });
+            const data = await res.json();
+            aggiungiMessaggio("🎨", "ArtGPT risponde:", data.risposta, 'bot');
+          } catch (e) {
+            aggiungiMessaggio("❌", "Errore:", "Errore durante l'analisi dell'immagine.", '');
+          }
+        };
+        reader.readAsDataURL(file);
+      }
+
+      if (domanda && !file) {
+        try {
+          const res = await fetch("/chiedi", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ domanda })
+          });
+
+          const data = await res.json();
+          aggiungiMessaggio("🎨", "ArtGPT risponde:", data.risposta, 'bot');
+        } catch (error) {
+          aggiungiMessaggio("❌", "Errore:", "Errore di rete. Riprova.", '');
+        }
+      }
+
+      input.value = "";
+      fileInput.value = "";
     }
 
     function aggiungiMessaggio(emoji, titolo, contenuto, tipo) {
       const container = document.createElement("div");
       container.className = `overlay ${tipo}`;
-      let imgHTML = "";
-      if (tipo === "bot") {
-        imgHTML = `<img src="https://source.unsplash.com/800x400/?art,painting" style="width:100%; border-radius: 12px; margin-bottom: 16px;">`;
-      }
-      container.innerHTML = `<h3><span class="icon">${emoji}</span>${titolo}</h3>${imgHTML}${formattaTesto(contenuto)}`;
+      container.innerHTML = `<h3><span class="icon">${emoji}</span>${titolo}</h3>${formattaTesto(contenuto)}`;
       document.getElementById("chat").appendChild(container);
-      salvaInStorage(emoji, titolo, contenuto, tipo);
       window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
     }
 
     function formattaTesto(testo) {
       const paragrafi = testo.trim().split(/\n{2,}/);
       return paragrafi.map(p => `<p>${p.replace(/\n/g, '<br>')}</p>`).join("");
-    }
-
-    function salvaInStorage(emoji, titolo, contenuto, tipo) {
-      let logs = JSON.parse(localStorage.getItem("chatGPTlog") || "[]");
-      logs.push({ emoji, titolo, contenuto, tipo });
-      localStorage.setItem("chatGPTlog", JSON.stringify(logs));
-    }
-
-    function caricaStorage() {
-      let logs = JSON.parse(localStorage.getItem("chatGPTlog") || "[]");
-      for (const msg of logs) {
-        aggiungiMessaggio(msg.emoji, msg.titolo, msg.contenuto, msg.tipo);
-      }
     }
 
     async function resettaChat() {
@@ -327,48 +272,28 @@
 
       const data = await res.json();
       document.getElementById("chat").innerHTML = "";
-      localStorage.removeItem("chatGPTlog");
       aggiungiMessaggio("🆕", "", data.risposta, 'bot');
     }
 
-    async function scaricaPDF() {
+    function scaricaPDF() {
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF();
-      const logs = JSON.parse(localStorage.getItem("chatGPTlog") || "[]");
       let y = 10;
-      for (const msg of logs) {
-        doc.setFontSize(11);
-        doc.setTextColor(msg.tipo === "utente" ? [26, 115, 232] : [52, 168, 83]);
-        doc.text(`${msg.emoji} ${msg.titolo}`, 10, y);
-        y += 6;
-        doc.setTextColor(0, 0, 0);
-        const lines = doc.splitTextToSize(msg.contenuto, 180);
-        doc.text(lines, 10, y);
-        y += lines.length * 6 + 4;
-        if (y > 270) { doc.addPage(); y = 10; }
-      }
-      doc.save("ArtGPT_conversazione.pdf");
+      document.querySelectorAll(".overlay").forEach((msg) => {
+        const testo = msg.innerText;
+        const righe = doc.splitTextToSize(testo, 180);
+        doc.text(righe, 10, y);
+        y += righe.length * 7;
+        if (y > 270) {
+          doc.addPage();
+          y = 10;
+        }
+      });
+      doc.save("ArtGPT_trascrizione.pdf");
     }
 
-    document.getElementById("imgInput").addEventListener("change", function(e) {
-      const img = e.target.files[0];
-      const anteprima = document.getElementById("anteprimaImg");
-      if (img) {
-        const reader = new FileReader();
-        reader.onload = function(evt) {
-          anteprima.src = evt.target.result;
-          anteprima.style.display = "block";
-        };
-        reader.readAsDataURL(img);
-      }
-    });
-
-    window.onload = caricaStorage;
     document.getElementById("domanda").addEventListener("keypress", function(e) {
       if (e.key === "Enter") chiedi();
-    });
-    document.getElementById("themeToggle").addEventListener("click", () => {
-      document.body.classList.toggle("dark-mode");
     });
   </script>
 </body>
