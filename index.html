@@ -1,9 +1,11 @@
+
 <!DOCTYPE html>
 <html lang="it">
 <head>
   <meta charset="UTF-8" />
   <title>ArtGPT</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&family=Raleway:wght@400;700&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
     :root {
       --bg-overlay: rgba(255, 255, 255, 0.85);
@@ -122,7 +124,6 @@
       background: transparent;
       outline: none;
       color: #202124;
-      font-family: 'Playfair Display', serif;
     }
 
     .input-container input::placeholder {
@@ -149,10 +150,8 @@
       fill: white;
     }
 
-    #nuovaChat {
+    #nuovaChat, #scaricaPDF {
       position: fixed;
-      bottom: 100px;
-      right: 30px;
       background: white;
       border: 1px solid #dadce0;
       border-radius: 20px;
@@ -165,8 +164,18 @@
       transition: background 0.3s ease;
     }
 
-    #nuovaChat:hover {
+    #nuovaChat:hover, #scaricaPDF:hover {
       background: #f1f3f4;
+    }
+
+    #nuovaChat {
+      bottom: 100px;
+      right: 30px;
+    }
+
+    #scaricaPDF {
+      bottom: 150px;
+      right: 30px;
     }
 
     #themeToggle {
@@ -181,11 +190,6 @@
       cursor: pointer;
       font-size: 18px;
       z-index: 101;
-      transition: background 0.3s ease;
-    }
-
-    #themeToggle:hover {
-      background: rgba(0, 0, 0, 0.8);
     }
 
     #loader {
@@ -212,51 +216,20 @@
       animation: bounce 1.4s infinite ease-in-out both;
     }
 
-    .dots-typing::before {
-      left: 0;
-      animation-delay: -0.32s;
-    }
-
-    .dots-typing div {
-      left: 24px;
-      animation-delay: -0.16s;
-    }
-
-    .dots-typing::after {
-      left: 48px;
-    }
+    .dots-typing::before { left: 0; animation-delay: -0.32s; }
+    .dots-typing div { left: 24px; animation-delay: -0.16s; }
+    .dots-typing::after { left: 48px; }
 
     @keyframes bounce {
       0%, 80%, 100% { transform: scale(0); }
       40% { transform: scale(1.0); }
     }
-
-    @media (max-width: 768px) {
-      .overlay {
-        margin: 10px;
-        padding: 15px;
-      }
-
-      #nuovaChat {
-        bottom: 90px;
-        right: 15px;
-      }
-
-      .input-barra {
-        padding: 15px;
-      }
-    }
   </style>
 </head>
 <body>
-
   <button id="themeToggle" title="Cambia tema">🌓</button>
-
   <div id="chat"></div>
-
-  <div id="loader">
-    <div class="dots-typing"><div></div></div>
-  </div>
+  <div id="loader"><div class="dots-typing"><div></div></div></div>
 
   <div class="input-barra">
     <div class="input-container">
@@ -268,6 +241,7 @@
   </div>
 
   <button id="nuovaChat" onclick="resettaChat()">🔁 Nuova chat</button>
+  <button id="scaricaPDF" onclick="scaricaPDF()">📄 Scarica PDF</button>
 
   <script>
     async function chiedi() {
@@ -289,7 +263,7 @@
         const data = await res.json();
         document.getElementById("loader").style.display = "none";
         aggiungiMessaggio("🎨", "ArtGPT risponde:", data.risposta, 'bot');
-      } catch (error) {
+      } catch {
         document.getElementById("loader").style.display = "none";
         aggiungiMessaggio("❌", "Errore:", "Errore di rete. Riprova.", '');
       }
@@ -304,12 +278,26 @@
       }
       container.innerHTML = `<h3><span class="icon">${emoji}</span>${titolo}</h3>${imgHTML}${formattaTesto(contenuto)}`;
       document.getElementById("chat").appendChild(container);
+      salvaInStorage(emoji, titolo, contenuto, tipo);
       window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
     }
 
     function formattaTesto(testo) {
       const paragrafi = testo.trim().split(/\n{2,}/);
       return paragrafi.map(p => `<p>${p.replace(/\n/g, '<br>')}</p>`).join("");
+    }
+
+    function salvaInStorage(emoji, titolo, contenuto, tipo) {
+      let logs = JSON.parse(localStorage.getItem("chatGPTlog") || "[]");
+      logs.push({ emoji, titolo, contenuto, tipo });
+      localStorage.setItem("chatGPTlog", JSON.stringify(logs));
+    }
+
+    function caricaStorage() {
+      let logs = JSON.parse(localStorage.getItem("chatGPTlog") || "[]");
+      for (const msg of logs) {
+        aggiungiMessaggio(msg.emoji, msg.titolo, msg.contenuto, msg.tipo);
+      }
     }
 
     async function resettaChat() {
@@ -321,13 +309,33 @@
 
       const data = await res.json();
       document.getElementById("chat").innerHTML = "";
+      localStorage.removeItem("chatGPTlog");
       aggiungiMessaggio("🆕", "", data.risposta, 'bot');
     }
 
+    async function scaricaPDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      const logs = JSON.parse(localStorage.getItem("chatGPTlog") || "[]");
+      let y = 10;
+      for (const msg of logs) {
+        doc.setFontSize(11);
+        doc.setTextColor(msg.tipo === "utente" ? [26, 115, 232] : [52, 168, 83]);
+        doc.text(`${msg.emoji} ${msg.titolo}`, 10, y);
+        y += 6;
+        doc.setTextColor(0, 0, 0);
+        const lines = doc.splitTextToSize(msg.contenuto, 180);
+        doc.text(lines, 10, y);
+        y += lines.length * 6 + 4;
+        if (y > 270) { doc.addPage(); y = 10; }
+      }
+      doc.save("ArtGPT_conversazione.pdf");
+    }
+
+    window.onload = caricaStorage;
     document.getElementById("domanda").addEventListener("keypress", function(e) {
       if (e.key === "Enter") chiedi();
     });
-
     document.getElementById("themeToggle").addEventListener("click", () => {
       document.body.classList.toggle("dark-mode");
     });
