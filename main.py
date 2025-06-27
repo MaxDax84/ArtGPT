@@ -1,6 +1,10 @@
+
 from flask import Flask, request, jsonify, send_from_directory
 from openai import OpenAI
 import os
+import base64
+from PIL import Image
+from io import BytesIO
 
 app = Flask(__name__)
 
@@ -25,7 +29,6 @@ def chiedi():
         if not domanda:
             return jsonify({"risposta": "Per favore, scrivi una domanda."})
 
-        # Prompt dinamico: lascia decidere al modello se la domanda è attinente all'arte
         prompt_iniziale = {
             "role": "system",
             "content": (
@@ -55,6 +58,46 @@ def chiedi():
 
     except Exception as e:
         return jsonify({"risposta": f"Errore: {str(e)}"})
+
+@app.route("/analizza", methods=["POST"])
+def analizza_immagine():
+    try:
+        data = request.get_json()
+        image_data = data.get("imageData")
+
+        if not image_data:
+            return jsonify({"risposta": "Nessuna immagine ricevuta."})
+
+        image_data = image_data.split(",")[1]
+        image = Image.open(BytesIO(base64.b64decode(image_data)))
+
+        messaggi = [
+            {
+                "role": "system",
+                "content": "Sei ArtGPT, un critico d'arte visiva. Analizzi immagini con sensibilità estetica e cultura artistica."
+            },
+            {
+                "role": "user",
+                "content": (
+                    "Immagina di osservare un'opera d'arte visiva. "
+                    "Descrivila come se l'avessi appena vista in una galleria: parla di stile, colori, emozioni, tecniche. "
+                    "L'opera è stata caricata da un utente. Sii poetico, evocativo e preciso, come un critico d’arte esperto."
+                )
+            }
+        ]
+
+        response = client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=messaggi,
+            max_tokens=400,
+            temperature=0.9
+        )
+
+        risposta = response.choices[0].message.content.strip()
+        return jsonify({"risposta": risposta})
+
+    except Exception as e:
+        return jsonify({"risposta": f"Errore durante l'analisi: {str(e)}"})
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
