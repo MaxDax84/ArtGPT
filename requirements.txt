@@ -1,4 +1,3 @@
 flask
 openai
 Pillow
-google-cloud-vision
