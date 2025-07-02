@@ -123,13 +123,8 @@
       fill: white;
     }
 
-    #fileInput {
-      margin-top: 5px;
-    }
-
-    #nuovaChat {
+    #nuovaChat, #scaricaPDF {
       position: fixed;
-      bottom: 160px;
       right: 30px;
       background: white;
       border: 1px solid #dadce0;
@@ -142,32 +137,18 @@
       z-index: 99;
     }
 
-    #scaricaPDF {
-      position: fixed;
-      bottom: 210px;
-      right: 30px;
-      background: white;
-      border: 1px solid #dadce0;
-      border-radius: 20px;
-      padding: 10px 18px;
-      font-size: 14px;
-      cursor: pointer;
-      color: #1a73e8;
-      font-weight: bold;
-      z-index: 99;
-    }
+    #nuovaChat { bottom: 160px; }
+    #scaricaPDF { bottom: 210px; }
 
     @media (max-width: 768px) {
       .overlay {
         margin: 10px;
         padding: 15px;
       }
-
       #nuovaChat, #scaricaPDF {
         bottom: 120px;
         right: 15px;
       }
-
       .input-barra {
         padding: 15px;
       }
@@ -175,9 +156,7 @@
   </style>
 </head>
 <body>
-
   <div id="chat"></div>
-
   <div class="input-barra">
     <div class="input-container">
       <input id="domanda" type="text" placeholder="Scrivi la tua domanda artistica..." />
@@ -185,69 +164,30 @@
         <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
       </button>
     </div>
-    <input type="file" id="fileInput" accept="image/*" />
   </div>
-
   <button id="scaricaPDF" onclick="scaricaPDF()">📄 Scarica PDF</button>
   <button id="nuovaChat" onclick="resettaChat()">🔁 Nuova chat</button>
-
   <script>
-    function aggiungiImmagine(src) {
-      const img = document.createElement("img");
-      img.src = src;
-      img.style.maxWidth = "200px";
-      img.style.display = "block";
-      img.style.margin = "15px auto";
-      document.getElementById("chat").appendChild(img);
-    }
-
     async function chiedi() {
       const input = document.getElementById("domanda");
-      const fileInput = document.getElementById("fileInput");
       const domanda = input.value.trim();
-      const file = fileInput.files[0];
+      if (!domanda) return;
 
-      if (domanda) {
-        aggiungiMessaggio("🙋‍♂️", "La tua domanda:", domanda, 'utente');
-      }
+      aggiungiMessaggio("🙋‍♂️", "La tua domanda:", domanda, 'utente');
 
-      if (file && file.type.startsWith("image/")) {
-        const reader = new FileReader();
-        reader.onload = async function () {
-          const base64Image = reader.result;
-          aggiungiImmagine(base64Image);
-          try {
-            const res = await fetch("/analizza", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ imageData: base64Image })
-            });
-            const data = await res.json();
-            aggiungiMessaggio("🎨", "ArtGPT risponde:", data.risposta, 'bot');
-          } catch (e) {
-            aggiungiMessaggio("❌", "Errore:", "Errore durante l'analisi dell'immagine.", '');
-          }
-        };
-        reader.readAsDataURL(file);
-      }
-
-      if (domanda && !file) {
-        try {
-          const res = await fetch("/chiedi", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ domanda })
-          });
-
-          const data = await res.json();
-          aggiungiMessaggio("🎨", "ArtGPT risponde:", data.risposta, 'bot');
-        } catch (error) {
-          aggiungiMessaggio("❌", "Errore:", "Errore di rete. Riprova.", '');
-        }
+      try {
+        const res = await fetch("/chiedi", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ domanda })
+        });
+        const data = await res.json();
+        aggiungiMessaggio("🎨", "ArtGPT risponde:", data.risposta, 'bot');
+      } catch (error) {
+        aggiungiMessaggio("❌", "Errore:", "Errore di rete. Riprova.", '');
       }
 
       input.value = "";
-      fileInput.value = "";
     }
 
     function aggiungiMessaggio(emoji, titolo, contenuto, tipo) {
